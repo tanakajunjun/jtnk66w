@@ -1,0 +1,4 @@
+https://joric.github.io/qle/
+textタブを開き、upload image
+126x24のサイズの黒字に白文字のbmp
+fontのexportをコピーして使う。
