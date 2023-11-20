@@ -266,9 +266,6 @@ void oled_render_logo(void) {
 }
 
 bool oled_task_user(void) {
-    if(key_timer == 30) {
-        oled_clear();
-    }
 	if(key_timer > 0){
 		key_timer -= 1;
 	} else {
@@ -295,12 +292,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 bool should_process_keypress(void) { return true; }
 
-bool process_record_user(uint16aa_t keycode, keyrecord_t *record) {
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // 以下追加
   if (record->event.pressed) {
-    set_keylog(keycode, record);
     oled_scroll_off();
-    key_timer = 30;
+    oled_clear();
+    key_timer = 300;
+    set_keylog(keycode, record);
   }
   bool continue_process = process_record_user_jtu(keycode, record);
   if (continue_process == false) {
