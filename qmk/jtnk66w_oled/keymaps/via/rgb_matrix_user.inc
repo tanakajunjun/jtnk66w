@@ -271,6 +271,49 @@ bool my_cool_effect3(effect_params_t* params) {
     return led_max < DRIVER_LED_TOTAL;
 
 }
+bool my_cool_effect4(effect_params_t* params) {
+
+    RGB_MATRIX_USE_LIMITS(led_min, led_max);
+
+    uint16_t time      = scale16by8(g_rgb_timer, rgb_matrix_config.speed / 8);
+
+    HSV hsv = {cos8(time),220,255};
+    hsv.v   = scale8(hsv.v, rgb_matrix_config.hsv.v);
+	//uint8_t   sin_value = sin8(time);
+	//uint8_t   cos_value = sin8(time*2);
+
+    if(is_initial < DRIVER_LED_TOTAL){
+        RGB rgb = rgb_matrix_hsv_to_rgb(hsv);
+        rgb_matrix_set_color(ledTable[is_initial], rgb.r, rgb.g, rgb.b);
+        is_initial++;
+        return false;
+    }
+
+
+
+    for (uint8_t i = led_min; i < led_max; i++) {
+	    	uint8_t start = 0;
+	    	uint8_t count = g_last_hit_tracker.count;
+            RGB_MATRIX_TEST_LED_FLAGS();
+
+            uint8_t xx = time - g_led_config.point[i].x / 4 - g_led_config.point[i].y;
+            hsv.h = xx;
+
+            for (uint8_t j = start; j < count; j++) {
+                int16_t  dx   = g_led_config.point[i].x - g_last_hit_tracker.x[j];
+                int16_t  dy   = g_led_config.point[i].y - g_last_hit_tracker.y[j];
+                uint8_t  dist = sqrt16(dx * dx + dy * dy);
+                uint16_t tick = scale16by8(g_last_hit_tracker.tick[j], qadd8(rgb_matrix_config.speed, 1));
+                hsv           = my_math2(hsv, dx, dy, dist, tick);
+            }
+
+            RGB rgb = rgb_matrix_hsv_to_rgb(hsv);
+            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+	}
+
+    return led_max < DRIVER_LED_TOTAL;
+
+}
 
 
 #endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
